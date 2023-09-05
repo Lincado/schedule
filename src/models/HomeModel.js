@@ -1,3 +1,4 @@
+// Pasta model que faz tratamento de dados
 const mongoose = require('mongoose');
 
 const HomeSchema = new mongoose.Schema({
