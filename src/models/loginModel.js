@@ -12,11 +12,28 @@ const loginSchema = new mongoose.Schema({
 const loginModel = mongoose.model('login', loginSchema);
 
 //o que for postado vai ser recebido aqui
-class login {
+class Login {
   constructor(body) {
     this.body = body;
     this.errors = [];
     this.user = null
+  }
+
+  async login() {
+    this.valida()
+    if(this.errors.length > 0) return 
+    this.user = await loginModel.findOne({ email: this.body.email })
+
+    if(!this.user) {
+      this.errors.push("Usuário não existe")
+      this.user = null
+      return
+    }
+    //se usuário passar daqui, criar uma sessão no loginController
+    if(!bcryptjs.compareSync(this.body.password, this.user.password)) {
+      this.errors.push("Senha inválida")
+      return
+    }
   }
 
   async register() {
@@ -35,9 +52,9 @@ class login {
   }
   async UserExist() {
     // Aqui não precisa do try...catch pois ja foi usado em loginController, e ia impedir o try catch de lá de executar
-    const user = await loginModel.findOne({ email: this.body.email })
+    this.user = await loginModel.findOne({ email: this.body.email })
 
-    if(user) this.errors.push("Usuário já existe")
+    if(this.user) this.errors.push("Usuário já existe")
   }
 
   valida() {
@@ -55,7 +72,7 @@ class login {
   clearUp() {
     for(const key in this.body) {
       //este body são os campos do form
-      if (typeof this.body[key] !== "String") {
+      if (typeof this.body[key] !== "string") {
         this.body[key] = "" 
       }
     }
@@ -67,4 +84,4 @@ class login {
   }
 }
 
-module.exports = login;
+module.exports = Login;
