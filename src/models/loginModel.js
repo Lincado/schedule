@@ -1,6 +1,7 @@
 // Pasta model que faz tratamento de dados
 const validator = require("validator")
 const mongoose = require('mongoose');
+const bcryptjs = require("bcryptjs")
 
 const loginSchema = new mongoose.Schema({
   email: { type: String, required: true },
@@ -19,14 +20,28 @@ class login {
   }
 
   async register() {
-    this.valida()
-    if(this.errors.length > 0) return
-    //sempre que tiver async await usar try catch
+    this.valida() // Valida todos os dados
+    if(this.errors.length > 0) return // se possuir um error vai gerar flash message do erro
+    
+    await this.UserExist() // checar se usuário existe
+
+    if(this.errors.length > 0) return // se usuário ja existir vai exibir a flash message de que email ja está sendo utilizado
+
+    const salt = bcryptjs.genSaltSync(); // gerando salt (sequencia aleatória)
+    this.body.password = bcryptjs.hashSync(this.body.password, salt) // usando salt no value da senha para que represente a senha original, mas que não pode ser revertido (uma sequencia de caracteres, é como se fosse uma criptografia, porem não pode ser revertida ao estado original)
+
+       //sempre que tiver async await usar try catch
     try {
-    this.user = await loginModel.create(this.body)
+      this.user = await loginModel.create(this.body)
     }catch(e) {
       console.log(e)
     }
+  }
+  async UserExist() {
+    //olhando base de já possui esse email para ver se pode ou não ser usado para novos usuários
+    const user = await loginModel.findOne({ email: this.body.email })
+
+    if(user) this.errors.push("Usuário já existe")
   }
 
   valida() {
