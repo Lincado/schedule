@@ -9,12 +9,12 @@
       <p class="text-center lead">Crie ou edite seu contato abaixo.</p>
       <%- include('includes/messages') %>
         <% if(contato._id) { %>
-          <form action="/contato/edit/<%= contato._id %>" method="POST">
+          <form action="/contato/edit/<%= contato._id %>" class="form-contato" method="POST">
             <% } else { %>
-              <form action="/contato/register" method="POST">
+              <form action="/contato/register" class="form-contato" method="POST">
                 <% } %>
                   <input type="hidden" name="_csrf" value=<%=csrfToken %>>
-                  <div class="form-group">
+                  <div class="form-group nome">
                     <label>Nome</label>
                     <input value="<%= contato.nome %>" type="text" class="form-control" name="nome">
                   </div>
@@ -22,11 +22,11 @@
                     <label>Sobrenome</label>
                     <input value="<%= contato.sobrenome %>" type="text" class="form-control" name="sobrenome">
                   </div>
-                  <div class="form-group">
+                  <div class="form-group email">
                     <label>Email</label>
                     <input value="<%= contato.email %>" type="email" class="form-control" name="email">
                   </div>
-                  <div class="form-group">
+                  <div class="form-group telefone">
                     <label>Telefone</label>
                     <input value="<%= contato.telefone %>" type="tel" class="form-control" name="telefone">
                   </div>
